@@ -1,7 +1,7 @@
 [void][Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms.DataVisualization")
 cls
 Write-Host "Authenicate with the FPL website" -ForegroundColor Green
-#$Credential = Get-Credential -Message 'Please enter your FPL login details'
+$Credential = Get-Credential -Message 'Please enter your FPL login details'
 $UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.19 Safari/537.36"
 $Uri = 'https://users.premierleague.com/accounts/login/'
 [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
