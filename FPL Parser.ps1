@@ -48,19 +48,7 @@ foreach($leaguePage in $leagueTableJson.standings)
                                                      TeamId = $teamId;
                                                      Manager = $manager;
                                                      TeamName = $teamName;
-                                                   };    
-            $unstructuredAllData += New-Object PsObject -Property @{
-                                                     GameWeek = 2;
-                                                     GameWeekPoints = $gameweek.points;
-                                                     PointsOnBench = $gameweek.points_on_bench;
-                                                     TransfersMade = $gameweek.event_transfers;
-                                                     TransfersCode = $gameweek.event_transfers_cost;
-                                                     OverallPoints = $gameweek.total_points;
-                                                     TeamValue = $value;
-                                                     TeamId = $teamId;
-                                                     Manager = $manager;
-                                                     TeamName = $teamName;
-                                                   }; 
+                                                   };
         }
     }
 }
@@ -119,6 +107,11 @@ $chartarea = New-Object System.Windows.Forms.DataVisualization.Charting.ChartAre
 $chartarea.Name = "ChartArea1";
 $chartarea.AxisY.Title = "Rank";
 $chartarea.AxisX.Title = "Gameweek";
+$chartarea.AxisX.Interval = 1;
+$chartarea.AxisY.Interval = 1;
+$chartarea.AxisY.IsReversed = $true;
+$chartarea.AxisY.IsStartedFromZero = $false;
+$chartarea.AxisX.IsStartedFromZero = $false;
 $legend = New-Object system.Windows.Forms.DataVisualization.Charting.Legend;
 $legend.name = "Legend1";
 $leagueChart.Legends.Add($legend);
@@ -128,13 +121,17 @@ foreach($team in $leagueTable)
     [void]$leagueChart.Series.Add($team.Manager);
     $leagueChart.Series[$team.Manager].ChartType = [System.Windows.Forms.DataVisualization.Charting.SeriesChartType]::Line;
     $leagueChart.Series[$team.Manager].BorderWidth = 3;
-    foreach($gameweek in $team.GameWeekHistory)
+    $gameweekList = @();
+    $gameweekRankList = @();
+    foreach($week in $team.GameWeekHistory)
     {
-        Write-Host $team.Manager " " $gameweek.GameWeek " " $gameweek.GameWeekRank -ForegroundColor Yellow
+        $gameweekList += $week.GameWeek -as [int];
+        $gameweekRankList += $week.GameWeekRank -as [int];
     }
+
+    $leagueChart.Series[$team.Manager].Points.DataBindXY($gameweekList, $gameweekRankList);
 }
 
-$leagueChart.DataBind();
 Write-Host "Charting complete" -ForegroundColor Green
 #$leagueChart.SaveImage("T:\FPL League History.png","png")
 $Form = New-Object Windows.Forms.Form;
