@@ -140,8 +140,12 @@ foreach($team in $leagueTable)
 Write-Host "Charting complete" -ForegroundColor Green
 $Form = New-Object Windows.Forms.Form;
 $Form.Text = "PowerShell Chart";
+$SaveButton = New-Object Windows.Forms.Button;
+$SaveButton.Text = "Save to desktop";
+$SaveButton.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Right;
+$SaveButton.add_click({$leagueChart.SaveImage($Env:USERPROFILE + "\Desktop\Chart.png", "PNG")});
+$Form.controls.add($SaveButton);
 $Form.controls.add($leagueChart);
 $Form.AutoSize = $true; 
 $Form.Add_Shown({$Form.Activate()});
 $Form.ShowDialog();
-#$leagueChart.SaveImage("T:\FPL League History.png","png")
