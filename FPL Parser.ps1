@@ -95,11 +95,12 @@ foreach($info in $rankedUnstructuredAllData)
     }
 }
 
+$totalPlayers = $leagueTable.Count;
 Write-Host "Begin charting" -ForegroundColor Green
 $leagueChart = New-object System.Windows.Forms.DataVisualization.Charting.Chart;
 $leagueChart.Width = 1200;
 $leagueChart.Height = 700;
-$leagueChart.BackColor = [System.Drawing.Color]::Black;
+$leagueChart.BackColor = [System.Drawing.Color]::White;
 [void]$leagueChart.Titles.Add("FPL League History");
 $leagueChart.Titles[0].Font = "Arial,20pt";
 $leagueChart.Titles[0].Alignment = "topLeft";
@@ -108,10 +109,14 @@ $chartarea.Name = "ChartArea1";
 $chartarea.AxisY.Title = "Rank";
 $chartarea.AxisX.Title = "Gameweek";
 $chartarea.AxisX.Interval = 1;
+$chartarea.AxisX.IsStartedFromZero = $false;
+$chartarea.AxisX.Minimum = 1;
+$chartarea.AxisX.Maximum = 38;
 $chartarea.AxisY.Interval = 1;
 $chartarea.AxisY.IsReversed = $true;
 $chartarea.AxisY.IsStartedFromZero = $false;
-$chartarea.AxisX.IsStartedFromZero = $false;
+$chartarea.AxisY.Maximum = $totalPlayers;
+$chartarea.AxisY.Minimum = 1;
 $legend = New-Object system.Windows.Forms.DataVisualization.Charting.Legend;
 $legend.name = "Legend1";
 $leagueChart.Legends.Add($legend);
@@ -133,11 +138,10 @@ foreach($team in $leagueTable)
 }
 
 Write-Host "Charting complete" -ForegroundColor Green
-#$leagueChart.SaveImage("T:\FPL League History.png","png")
 $Form = New-Object Windows.Forms.Form;
 $Form.Text = "PowerShell Chart";
-$Form.Width = 1200;
-$Form.Height = 700; 
 $Form.controls.add($leagueChart);
+$Form.AutoSize = $true; 
 $Form.Add_Shown({$Form.Activate()});
 $Form.ShowDialog();
+#$leagueChart.SaveImage("T:\FPL League History.png","png")
