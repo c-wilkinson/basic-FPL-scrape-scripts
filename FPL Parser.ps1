@@ -1,12 +1,12 @@
 [void][Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms.DataVisualization")
 cls
-Write-Host "Authenicate with the FPL website" -ForegroundColor Green
-$Credential = Get-Credential -Message 'Please enter your FPL login details'
-$UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.19 Safari/537.36"
-$Uri = 'https://users.premierleague.com/accounts/login/'
-[Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
-$LoginResponse = Invoke-WebRequest -Uri $Uri -SessionVariable 'FplSession' -UseBasicParsing
-$CsrfToken = $LoginResponse.InputFields.Where{$_.name -eq 'csrfmiddlewaretoken'}.value
+Write-Host "Authenicate with the FPL website" -ForegroundColor Green;
+$Credential = Get-Credential -Message 'Please enter your FPL login details';
+$UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.19 Safari/537.36";
+$Uri = 'https://users.premierleague.com/accounts/login/';
+[Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls";
+$LoginResponse = Invoke-WebRequest -Uri $Uri -SessionVariable 'FplSession' -UseBasicParsing;
+$CsrfToken = $LoginResponse.InputFields.Where{$_.name -eq 'csrfmiddlewaretoken'}.value;
 $Response = Invoke-WebRequest -Uri $Uri -WebSession $FplSession -Method 'Post' -UseBasicParsing -Body @{
     'csrfmiddlewaretoken' = $CsrfToken
     'login'               = $Credential.UserName
@@ -14,12 +14,15 @@ $Response = Invoke-WebRequest -Uri $Uri -WebSession $FplSession -Method 'Post' -
     'app'                 = 'plfpl-web'
     'redirect_uri'        = 'https://fantasy.premierleague.com/a/login'
     'user-agent'          = $UserAgent
-}
-Write-Host "Wipe Wipe History Table" -ForegroundColor Green
+};
+
+Write-Host "Wipe History Table" -ForegroundColor Green;
 $leagueTable = @();
-Write-Host "Load basic team information from FPL" -ForegroundColor Green
+Write-Host "Load basic team information from FPL" -ForegroundColor Green;
 $unstructuredAllData = @();
-$leagueTableJson = Invoke-RestMethod -Uri "https://fantasy.premierleague.com/api/leagues-classic/36351/standings/" -WebSession $FplSession -UseBasicParsing
+$leagueTableJson = Invoke-RestMethod -Uri "https://fantasy.premierleague.com/api/leagues-classic/36351/standings/" -WebSession $FplSession -UseBasicParsing;
+# Sleep, be as kind as possible to the FPL servers!
+Start-Sleep -Seconds 2.5;
 # Note, we could use this for multiple pages, if we decided we needed to, as we can see the "next page" here
 foreach($leaguePage in $leagueTableJson.standings)
 {
@@ -31,8 +34,8 @@ foreach($leaguePage in $leagueTableJson.standings)
         $score = $team.total;
         $rank = $team.rank;
         $teamId = $team.entry;
-        Write-Host "Load gameweek history for $teamName" -ForegroundColor Green
-        $gameweekHistoryJson = Invoke-RestMethod -Uri $teamurl -WebSession $FplSession -UseBasicParsing
+        Write-Host "Load gameweek history for $teamName" -ForegroundColor Green;
+        $gameweekHistoryJson = Invoke-RestMethod -Uri $teamurl -WebSession $FplSession -UseBasicParsing;
         foreach($gameweek in $gameweekHistoryJson.current)
         {
             $valueParser = ($gameweek.value).ToString();
@@ -50,10 +53,13 @@ foreach($leaguePage in $leagueTableJson.standings)
                                                      TeamName = $teamName;
                                                    };
         }
+
+        # Sleep, be as kind as possible to the FPL servers!
+        Start-Sleep -Seconds 2.5;
     }
 }
 
-Write-Host "Add gameweek ranks for the league" -ForegroundColor Green
+Write-Host "Add gameweek ranks for the league" -ForegroundColor Green;
 $rankedUnstructuredAllData = $unstructuredAllData | Group-Object GameWeek | ForEach-Object { 
       $rank = 0
       $_.Group | Sort-Object OverallPoints -Descending | Select-Object *, @{ 
@@ -62,7 +68,7 @@ $rankedUnstructuredAllData = $unstructuredAllData | Group-Object GameWeek | ForE
 };
 
 $leagueTable = @();
-Write-Host "Restructure the league data" -ForegroundColor Green
+Write-Host "Restructure the league data" -ForegroundColor Green;
 foreach($info in $rankedUnstructuredAllData)
 {
     $currentdata = $leagueTable | Where-Object {$_.TeamId -eq $info.TeamId};
@@ -140,8 +146,13 @@ foreach($team in $leagueTable)
 Write-Host "Charting complete" -ForegroundColor Green
 $Form = New-Object Windows.Forms.Form;
 $Form.Text = "PowerShell Chart";
+$SaveButton = New-Object Windows.Forms.Button;
+$SaveButton.Text = "Save to desktop";
+$SaveButton.AutoSize = $true;
+$SaveButton.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Right;
+$SaveButton.add_click({$leagueChart.SaveImage($Env:USERPROFILE + "\Desktop\Chart.png", "PNG")});
+$Form.controls.add($SaveButton);
 $Form.controls.add($leagueChart);
 $Form.AutoSize = $true; 
 $Form.Add_Shown({$Form.Activate()});
 $Form.ShowDialog();
-#$leagueChart.SaveImage("T:\FPL League History.png","png")
