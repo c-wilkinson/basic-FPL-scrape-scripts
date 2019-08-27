@@ -1,5 +1,5 @@
 # basic-FPL-league-scrape
-Very basic powershell script to scrape some information from the FPL website.
+Very basic scripts to scrape some information from the FPL website.
 
 Do with this as you wish.  
 
