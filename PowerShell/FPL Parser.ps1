@@ -23,14 +23,23 @@ $unstructuredAllData = @();
 $leagueTableJson = Invoke-RestMethod -Uri "https://fantasy.premierleague.com/api/leagues-classic/36351/standings/" -WebSession $FplSession -UseBasicParsing;
 # Sleep, be as kind as possible to the FPL servers!
 Start-Sleep -Seconds 2.5;
+# Encoding, ugly fix for bug #6
+$utf8 = [System.Text.Encoding]::GetEncoding(65001);
+$iso88591 = [System.Text.Encoding]::GetEncoding(28591);
 # Note, we could use this for multiple pages, if we decided we needed to, as we can see the "next page" here
 foreach($leaguePage in $leagueTableJson.standings)
 {
     foreach($team in $leaguePage.results)
     {
         $teamurl = "https://fantasy.premierleague.com/api/entry/"+$team.entry+"/history/";
-        $teamName = $team.entry_name;
-        $manager = $team.player_name;
+        # Encoding, ugly fix for bug #6
+        $teamName = $utf8.GetBytes($team.entry_name);
+        $teamName = [System.Text.Encoding]::Convert($utf8,$iso88591,$teamName);
+        $teamName = $utf8.GetString($teamName);
+        # Encoding, ugly fix for bug #6
+        $manager = $utf8.GetBytes($team.player_name);
+        $manager = [System.Text.Encoding]::Convert($utf8,$iso88591,$manager);
+        $manager = $utf8.GetString($manager);
         $score = $team.total;
         $rank = $team.rank;
         $teamId = $team.entry;
