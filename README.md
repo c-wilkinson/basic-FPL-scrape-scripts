@@ -1,10 +1,4 @@
 # basic-FPL-league-scrape
-[![licence badge]][licence]
-[![stars badge]][stars]
-[![issues badge]][issues]
-[![bug_report badge]][bug_report]
-[![feature_request badge]][feature_request]
-
 Very basic scripts to scrape some information from the FPL website.
 
 Do with this as you wish.  
