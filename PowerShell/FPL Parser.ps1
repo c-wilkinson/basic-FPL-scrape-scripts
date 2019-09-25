@@ -1,7 +1,6 @@
 [void][Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms.DataVisualization")
-function Authenicate
+function Authenticate
 {
-    Write-Host "Authenicate with the FPL website" -ForegroundColor Green;
     $Credential = Get-Credential -Message 'Please enter your FPL login details';
     $UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.19 Safari/537.36";
     $Uri = 'https://users.premierleague.com/accounts/login/';
@@ -201,21 +200,46 @@ function CreateForm($chart, $saveChart)
 }
 
 cls;
-$session = Authenicate;
-$allleagueTablePage = @();
-$loop = $true;
-$pageNumber = 1;
-while ($loop)
+$authenticated = $false;
+$retry = 1;
+while (-not $authenticated)
 {
-    $leagueTableJson = ScrapeFPLWebSite $session "https://fantasy.premierleague.com/api/leagues-classic/36351/standings/?page_standings=$pageNumber";
-    $allleagueTablePage += $leagueTableJson;
-    $loop = $leagueTableJson.standings.has_next;
-    $pageNumber++;
+    $session = Authenticate;
+    # Test whether or not we're logged in
+    $userJson = ScrapeFPLWebSite $session "https://fantasy.premierleague.com/api/me/";
+    if (-not ($userJson.player.id)) 
+    {
+        Write-Host "Invalid credentials, please try again" -ForegroundColor Red;
+        $authenticated = $false;  
+        $retry++;
+        if ($retry -gt 3) 
+        {
+            throw 'Invalid credentials';
+        }
+    }
+    else
+    {
+        $authenticated = $true;
+    }
 }
 
-$unstructuredAllData = CreateInitialLeagueStructure $allleagueTablePage;
-$unstructuredAllData = OrderStructure $unstructuredAllData;
-$leagueTable = CreateLeagueStructure $unstructuredAllData;
-$formChart = CreateChart $leagueTable $true;
-$saveChart = CreateChart $leagueTable $false;
-CreateForm $formChart $saveChart;
+if ($authenticated)
+{
+    $allleagueTablePage = @();
+    $pageNumber = 1;
+    $loop = $true;
+    while ($loop)
+    {
+        $leagueTableJson = ScrapeFPLWebSite $session "https://fantasy.premierleague.com/api/leagues-classic/36351/standings/?page_standings=$pageNumber";
+        $allleagueTablePage += $leagueTableJson;
+        $loop = $leagueTableJson.standings.has_next;
+        $pageNumber++;
+    }
+
+    $unstructuredAllData = CreateInitialLeagueStructure $allleagueTablePage;
+    $unstructuredAllData = OrderStructure $unstructuredAllData;
+    $leagueTable = CreateLeagueStructure $unstructuredAllData;
+    $formChart = CreateChart $leagueTable $true;
+    $saveChart = CreateChart $leagueTable $false;
+    CreateForm $formChart $saveChart;
+}
