@@ -184,7 +184,7 @@ function CreateForm($chart)
     $SaveButton.Text = "Save to desktop";
     $SaveButton.AutoSize = $true;
     $SaveButton.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Right;
-    $SaveButton.add_click({$leagueChart.SaveImage($Env:USERPROFILE + "\Desktop\Chart.png", "PNG")});
+    $SaveButton.add_click({$chart.SaveImage($Env:USERPROFILE + "\Desktop\Chart.png", "PNG")});
     $Form.controls.add($SaveButton);
     $Form.controls.add($chart);
     $Form.AutoSize = $true; 
