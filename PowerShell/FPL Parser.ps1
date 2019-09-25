@@ -130,12 +130,20 @@ function CreateLeagueStructure($structure)
     $leagueTable;
 }
 
-function CreateChart($league)
+function CreateChart($league, $form)
 {
     $totalPlayers = $league.Count;
     $leagueChart = New-object System.Windows.Forms.DataVisualization.Charting.Chart;
-    $leagueChart.Width = 1200;
-    $leagueChart.Height = 700;
+    $leagueChart.Width = ([System.Windows.Forms.SystemInformation]::PrimaryMonitorSize.Width) - 200;
+    if ($form)
+    {
+        $leagueChart.Height = ([System.Windows.Forms.SystemInformation]::PrimaryMonitorSize.Height) - 200;
+    }
+    else
+    {
+        $leagueChart.Height = ($totalPlayers * 10) + 1000;
+    }
+
     $leagueChart.BackColor = [System.Drawing.Color]::White;
     [void]$leagueChart.Titles.Add("FPL League History");
     $leagueChart.Titles[0].Font = "Arial,20pt";
@@ -176,7 +184,7 @@ function CreateChart($league)
     $leagueChart;
 }
 
-function CreateForm($chart)
+function CreateForm($chart, $saveChart)
 {
     $Form = New-Object System.Windows.Forms.Form;
     $Form.Text = "PowerShell Chart";
@@ -184,7 +192,7 @@ function CreateForm($chart)
     $SaveButton.Text = "Save to desktop";
     $SaveButton.AutoSize = $true;
     $SaveButton.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Right;
-    $SaveButton.add_click({$chart.SaveImage($Env:USERPROFILE + "\Desktop\Chart.png", "PNG")});
+    $SaveButton.add_click({$saveChart.SaveImage($Env:USERPROFILE + "\Desktop\Chart.png", "PNG")});
     $Form.controls.add($SaveButton);
     $Form.controls.add($chart);
     $Form.AutoSize = $true; 
@@ -198,7 +206,7 @@ $loop = $true;
 $pageNumber = 1;
 while ($loop)
 {
-    $leagueTableJson = ScrapeFPLWebSite $session "https://fantasy.premierleague.com/api/leagues-classic/523209/standings/?page_standings=$pageNumber";
+    $leagueTableJson = ScrapeFPLWebSite $session "https://fantasy.premierleague.com/api/leagues-classic/36351/standings/?page_standings=$pageNumber";
     $allleagueTablePage += $leagueTableJson;
     $loop = $leagueTableJson.standings.has_next;
     $pageNumber++;
@@ -207,5 +215,6 @@ while ($loop)
 $unstructuredAllData = CreateInitialLeagueStructure $allleagueTablePage;
 $unstructuredAllData = OrderStructure $unstructuredAllData;
 $leagueTable = CreateLeagueStructure $unstructuredAllData;
-$leagueChart = CreateChart $leagueTable;
-CreateForm $leagueChart;
+$formChart = CreateChart $leagueTable $true;
+$saveChart = CreateChart $leagueTable $false;
+CreateForm $formChart $saveChart;
