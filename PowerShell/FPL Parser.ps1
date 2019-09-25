@@ -39,42 +39,44 @@ function EncodeString([string]$string)
     $newString;
 }
 
-function CreateInitialLeagueStructure($json)
+function CreateInitialLeagueStructure($jsonArray)
 {
     $unstructured = @();
-    # Note, we could use this for multiple pages, if we decided we needed to, as we can see the "next page" here
-    foreach($leaguePage in $json.standings)
+    foreach($json in $jsonArray)
     {
-        foreach($team in $leaguePage.results)
+        foreach($leaguePage in $json.standings)
         {
-            $teamurl = "https://fantasy.premierleague.com/api/entry/"+$team.entry+"/history/";
-            $teamName = EncodeString $team.entry_name;
-            $manager = EncodeString $team.player_name;
-            $score = $team.total;
-            $rank = $team.rank;
-            $teamId = $team.entry;
-            Write-Host "Load gameweek history for $teamName" -ForegroundColor Green;
-            $gameweekHistoryJson = ScrapeFPLWebSite $session $teamurl;
-            foreach($gameweek in $gameweekHistoryJson.current)
+            foreach($team in $leaguePage.results)
             {
-                $valueParser = ($gameweek.value).ToString();
-                $value = "£" + $valueParser.SubString(0, $valueParser.length - 1) + '.' + $valueParser.SubString($valueParser.length - 1, 1);
-                $unstructured += New-Object PsObject -Property @{
-                                                         GameWeek = $gameweek.event;
-                                                         GameWeekPoints = $gameweek.points;
-                                                         PointsOnBench = $gameweek.points_on_bench;
-                                                         TransfersMade = $gameweek.event_transfers;
-                                                         TransfersCode = $gameweek.event_transfers_cost;
-                                                         OverallPoints = $gameweek.total_points;
-                                                         TeamValue = $value;
-                                                         TeamId = $teamId;
-                                                         Manager = $manager;
-                                                         TeamName = $teamName;
-                                                       };
+                $teamurl = "https://fantasy.premierleague.com/api/entry/"+$team.entry+"/history/";
+                $teamName = EncodeString $team.entry_name;
+                $manager = EncodeString $team.player_name;
+                $score = $team.total;
+                $rank = $team.rank;
+                $teamId = $team.entry;
+                Write-Host "Load gameweek history for $teamName" -ForegroundColor Green;
+                $gameweekHistoryJson = ScrapeFPLWebSite $session $teamurl;
+                foreach($gameweek in $gameweekHistoryJson.current)
+                {
+                    $valueParser = ($gameweek.value).ToString();
+                    $value = "£" + $valueParser.SubString(0, $valueParser.length - 1) + '.' + $valueParser.SubString($valueParser.length - 1, 1);
+                    $unstructured += New-Object PsObject -Property @{
+                                                             GameWeek = $gameweek.event;
+                                                             GameWeekPoints = $gameweek.points;
+                                                             PointsOnBench = $gameweek.points_on_bench;
+                                                             TransfersMade = $gameweek.event_transfers;
+                                                             TransfersCode = $gameweek.event_transfers_cost;
+                                                             OverallPoints = $gameweek.total_points;
+                                                             TeamValue = $value;
+                                                             TeamId = $teamId;
+                                                             Manager = $manager;
+                                                             TeamName = $teamName;
+                                                           };
+                }
             }
         }
     }
-
+    
     $unstructured;
 }
 
@@ -191,8 +193,18 @@ function CreateForm($chart)
 }
 
 $session = Authenicate;
-$leagueTableJson = ScrapeFPLWebSite $session "https://fantasy.premierleague.com/api/leagues-classic/36351/standings/";
-$unstructuredAllData = CreateInitialLeagueStructure $leagueTableJson;
+$allleagueTablePage = @();
+$loop = $true;
+$pageNumber = 1;
+while ($loop)
+{
+    $leagueTableJson = ScrapeFPLWebSite $session "https://fantasy.premierleague.com/api/leagues-classic/523209/standings/?page_standings=$pageNumber";
+    $allleagueTablePage += $leagueTableJson;
+    $loop = $leagueTableJson.standings.has_next;
+    $pageNumber++;
+}
+
+$unstructuredAllData = CreateInitialLeagueStructure $allleagueTablePage;
 $unstructuredAllData = OrderStructure $unstructuredAllData;
 $leagueTable = CreateLeagueStructure $unstructuredAllData;
 $leagueChart = CreateChart $leagueTable;
