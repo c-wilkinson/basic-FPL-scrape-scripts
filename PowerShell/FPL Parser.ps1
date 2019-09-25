@@ -1,4 +1,4 @@
-cls
+[void][Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms.DataVisualization")
 function Authenicate
 {
     Write-Host "Authenicate with the FPL website" -ForegroundColor Green;
@@ -200,6 +200,7 @@ function CreateForm($chart, $saveChart)
     $Form.ShowDialog();
 }
 
+cls;
 $session = Authenicate;
 $allleagueTablePage = @();
 $loop = $true;
