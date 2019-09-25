@@ -1,4 +1,3 @@
-[void][Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms.DataVisualization")
 cls
 function Authenicate
 {
@@ -152,7 +151,7 @@ function CreateChart($league)
     $chartarea.AxisY.IsStartedFromZero = $false;
     $chartarea.AxisY.Maximum = $totalPlayers;
     $chartarea.AxisY.Minimum = 1;
-    $legend = New-Object system.Windows.Forms.DataVisualization.Charting.Legend;
+    $legend = New-Object System.Windows.Forms.DataVisualization.Charting.Legend;
     $legend.name = "Legend1";
     $leagueChart.Legends.Add($legend);
     $leagueChart.ChartAreas.Add($chartarea);
@@ -177,9 +176,9 @@ function CreateChart($league)
 
 function CreateForm($chart)
 {
-    $Form = New-Object Windows.Forms.Form;
+    $Form = New-Object System.Windows.Forms.Form;
     $Form.Text = "PowerShell Chart";
-    $SaveButton = New-Object Windows.Forms.Button;
+    $SaveButton = New-Object System.Windows.Forms.Button;
     $SaveButton.Text = "Save to desktop";
     $SaveButton.AutoSize = $true;
     $SaveButton.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Right;
