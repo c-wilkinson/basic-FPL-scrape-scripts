@@ -223,6 +223,7 @@ function AuthenticationCheck
         }
         else
         {
+            Write-Host "Successfully authenticated on the FPL Server" -ForegroundColor Green;
             $authenticated = $true;
         }
     }
@@ -233,14 +234,13 @@ function AuthenticationCheck
                                           };
 }
 
-cls;
-$authenticationToken = AuthenticationCheck;
-if ($authenticationToken.Authenticated -eq $true)
+function LeagueNumber
 {
     $retry = 1;
     $numeric = $false;
     while (-not $numeric)
     {
+        Write-Host "Get the league number from the user" -ForegroundColor Green;
         $leagueId = [Microsoft.VisualBasic.Interaction]::InputBox('Please enter the league number:', 'League Number');
         $numeric = $leagueId -match '^\d+$';
         $retry++;
@@ -248,24 +248,47 @@ if ($authenticationToken.Authenticated -eq $true)
         {
             throw 'Invalid league ID';
         }
+
+        if (-not $numeric)
+        {
+            Write-Host "The typed league number is not numeric.  Expecting the numeric value in the league URL between '/leagues/' and '/standings/'" -ForegroundColor Red;
+        }
     }
 
-    if ($numeric)
-    {
-        $allleagueTablePage = @();
-        $pageNumber = 1;
-        $loop = $true;
-        while ($loop)
-        {
-            $leagueTableJson = ScrapeFPLWebSite $authenticationToken.Session "https://fantasy.premierleague.com/api/leagues-classic/$leagueId/standings/?page_standings=$pageNumber";
-            $allleagueTablePage += $leagueTableJson;
-            $loop = $leagueTableJson.standings.has_next;
-            $pageNumber++;
-        }
+    return New-Object PsObject -Property @{
+                                            LeagueID = $leagueId;
+                                            Valid = $numeric;
+                                          };
+}
 
-        $unstructuredAllData = CreateInitialLeagueStructure $allleagueTablePage $authenticationToken.Session;
-        $unstructuredAllData = OrderStructure $unstructuredAllData;
-        $leagueTable = CreateLeagueStructure $unstructuredAllData;
+function GatherUnstructuredLeagueData($leagueId)
+{
+    $allleagueTablePage = @();
+    $pageNumber = 1;
+    $loop = $true;
+    while ($loop)
+    {    
+        $leagueTableJson = ScrapeFPLWebSite $authenticationToken.Session "https://fantasy.premierleague.com/api/leagues-classic/$leagueId/standings/?page_standings=$pageNumber";
+        $allleagueTablePage += $leagueTableJson;
+        $loop = $leagueTableJson.standings.has_next;
+        $pageNumber++;
+    }
+
+    return $allleagueTablePage;
+}
+
+cls;
+$authenticationToken = AuthenticationCheck;
+if ($authenticationToken.Authenticated -eq $true)
+{
+    $leagueToken = LeagueNumber;
+
+    if ($leagueToken.Valid -eq $true)
+    {
+        $leagueTable = GatherUnstructuredLeagueData $leagueToken.LeagueID;
+        $leagueTable = CreateInitialLeagueStructure $leagueTable $authenticationToken.Session;
+        $leagueTable = OrderStructure $leagueTable;
+        $leagueTable = CreateLeagueStructure $leagueTable;
         $formChart = CreateChart $leagueTable $true;
         $saveChart = CreateChart $leagueTable $false;
         CreateForm $formChart $saveChart;
