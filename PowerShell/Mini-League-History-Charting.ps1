@@ -261,14 +261,14 @@ function LeagueNumber
                                           };
 }
 
-function GatherUnstructuredLeagueData($leagueId)
+function GatherUnstructuredLeagueData($leagueId, $session)
 {
     $allleagueTablePage = @();
     $pageNumber = 1;
     $loop = $true;
     while ($loop)
     {    
-        $leagueTableJson = ScrapeFPLWebSite $authenticationToken.Session "https://fantasy.premierleague.com/api/leagues-classic/$leagueId/standings/?page_standings=$pageNumber";
+        $leagueTableJson = ScrapeFPLWebSite $session "https://fantasy.premierleague.com/api/leagues-classic/$leagueId/standings/?page_standings=$pageNumber";
         $allleagueTablePage += $leagueTableJson;
         $loop = $leagueTableJson.standings.has_next;
         $pageNumber++;
@@ -285,7 +285,7 @@ if ($authenticationToken.Authenticated -eq $true)
 
     if ($leagueToken.Valid -eq $true)
     {
-        $leagueTable = GatherUnstructuredLeagueData $leagueToken.LeagueID;
+        $leagueTable = GatherUnstructuredLeagueData $leagueToken.LeagueID $authenticationToken.Session;
         $leagueTable = CreateInitialLeagueStructure $leagueTable $authenticationToken.Session;
         $leagueTable = OrderStructure $leagueTable;
         $leagueTable = CreateLeagueStructure $leagueTable;
