@@ -1,4 +1,6 @@
-[void][Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms.DataVisualization")
+Add-Type -AssemblyName System.Windows.Forms.DataVisualization
+Add-Type -AssemblyName Microsoft.VisualBasic
+
 function Authenticate
 {
     $Credential = Get-Credential -Message 'Please enter your FPL login details';
@@ -16,7 +18,7 @@ function Authenticate
         'user-agent'          = $UserAgent
     };
 
-    $FplSession;
+    return $FplSession;
 }
 
 function ScrapeFPLWebSite($session, $url)
@@ -24,7 +26,7 @@ function ScrapeFPLWebSite($session, $url)
     $json = Invoke-RestMethod -Uri $url -WebSession $session -UseBasicParsing;
     # Sleep, be as kind as possible to the FPL servers!
     Start-Sleep -Seconds 2.5;
-    $json;
+    return $json;
 }
 
 function EncodeString([string]$string)
@@ -35,10 +37,10 @@ function EncodeString([string]$string)
     $stringBytes = $utf8.GetBytes($string);
     $stringEncoded = [System.Text.Encoding]::Convert($utf8,$iso88591,$stringBytes);
     $newString = $utf8.GetString($stringEncoded);
-    $newString;
+    return $newString;
 }
 
-function CreateInitialLeagueStructure($jsonArray)
+function CreateInitialLeagueStructure($jsonArray, $session)
 {
     $unstructured = @();
     foreach($json in $jsonArray)
@@ -76,7 +78,7 @@ function CreateInitialLeagueStructure($jsonArray)
         }
     }
     
-    $unstructured;
+    return $unstructured;
 }
 
 function OrderStructure($structure)
@@ -88,7 +90,7 @@ function OrderStructure($structure)
           }
     };
 
-    $rankedStructure;
+    return $rankedStructure;
 }
 
 function CreateLeagueStructure($structure)
@@ -126,7 +128,7 @@ function CreateLeagueStructure($structure)
         }
     }
 
-    $leagueTable;
+    return $leagueTable;
 }
 
 function CreateChart($league, $form)
@@ -180,7 +182,7 @@ function CreateChart($league, $form)
         $leagueChart.Series[$team.Manager].Points.DataBindXY($gameweekList, $gameweekRankList);
     }
 
-    $leagueChart;
+    return $leagueChart;
 }
 
 function CreateForm($chart, $saveChart)
@@ -199,47 +201,73 @@ function CreateForm($chart, $saveChart)
     $Form.ShowDialog();
 }
 
-cls;
-$authenticated = $false;
-$retry = 1;
-while (-not $authenticated)
+function AuthenticationCheck
 {
-    $session = Authenticate;
-    # Test whether or not we're logged in
-    $userJson = ScrapeFPLWebSite $session "https://fantasy.premierleague.com/api/me/";
-    if (-not ($userJson.player.id)) 
+    $authenticated = $false;
+    $retry = 1;
+    Write-Host "Attempt to authenticate on the FPL Server" -ForegroundColor Green;
+    while (-not $authenticated)
     {
-        Write-Host "Invalid credentials, please try again" -ForegroundColor Red;
-        $authenticated = $false;  
+        $session = Authenticate;
+        # Test whether or not we're logged in
+        $userJson = ScrapeFPLWebSite $session "https://fantasy.premierleague.com/api/me/";
+        if (-not ($userJson.player.id)) 
+        {
+            Write-Host "Invalid credentials, please try again" -ForegroundColor Red;
+            $authenticated = $false;  
+            $retry++;
+            if ($retry -gt 3) 
+            {
+                throw 'Invalid credentials';
+            }
+        }
+        else
+        {
+            $authenticated = $true;
+        }
+    }
+
+    return New-Object PsObject -Property @{
+                                            Session = $session;
+                                            Authenticated = $authenticated;
+                                          };
+}
+
+cls;
+$authenticationToken = AuthenticationCheck;
+if ($authenticationToken.Authenticated -eq $true)
+{
+    $retry = 1;
+    $numeric = $false;
+    while (-not $numeric)
+    {
+        $leagueId = [Microsoft.VisualBasic.Interaction]::InputBox('Please enter the league number:', 'League Number');
+        $numeric = $leagueId -match '^\d+$';
         $retry++;
         if ($retry -gt 3) 
         {
-            throw 'Invalid credentials';
+            throw 'Invalid league ID';
         }
     }
-    else
-    {
-        $authenticated = $true;
-    }
-}
 
-if ($authenticated)
-{
-    $allleagueTablePage = @();
-    $pageNumber = 1;
-    $loop = $true;
-    while ($loop)
+    if ($numeric)
     {
-        $leagueTableJson = ScrapeFPLWebSite $session "https://fantasy.premierleague.com/api/leagues-classic/36351/standings/?page_standings=$pageNumber";
-        $allleagueTablePage += $leagueTableJson;
-        $loop = $leagueTableJson.standings.has_next;
-        $pageNumber++;
-    }
+        $allleagueTablePage = @();
+        $pageNumber = 1;
+        $loop = $true;
+        while ($loop)
+        {
+            $leagueTableJson = ScrapeFPLWebSite $authenticationToken.Session "https://fantasy.premierleague.com/api/leagues-classic/$leagueId/standings/?page_standings=$pageNumber";
+            $allleagueTablePage += $leagueTableJson;
+            $loop = $leagueTableJson.standings.has_next;
+            $pageNumber++;
+        }
 
-    $unstructuredAllData = CreateInitialLeagueStructure $allleagueTablePage;
-    $unstructuredAllData = OrderStructure $unstructuredAllData;
-    $leagueTable = CreateLeagueStructure $unstructuredAllData;
-    $formChart = CreateChart $leagueTable $true;
-    $saveChart = CreateChart $leagueTable $false;
-    CreateForm $formChart $saveChart;
+        $unstructuredAllData = CreateInitialLeagueStructure $allleagueTablePage $authenticationToken.Session;
+        $unstructuredAllData = OrderStructure $unstructuredAllData;
+        $leagueTable = CreateLeagueStructure $unstructuredAllData;
+        $formChart = CreateChart $leagueTable $true;
+        $saveChart = CreateChart $leagueTable $false;
+        CreateForm $formChart $saveChart;
+    }
 }
