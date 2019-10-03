@@ -1,6 +1,17 @@
-[void][Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms.DataVisualization")
+# Add the required assemblies
+Add-Type -AssemblyName System.Windows.Forms.DataVisualization
+Add-Type -AssemblyName Microsoft.VisualBasic
+
+# Declare the common functions
 function Authenticate
 {
+<#
+    .SYNOPSIS
+        Common Authenitcation function
+    .DESCRIPTION
+        This function is used to authenticate with the
+        FPL website.  It returns a websession.
+#>    
     $Credential = Get-Credential -Message 'Please enter your FPL login details';
     $UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.19 Safari/537.36";
     $Uri = 'https://users.premierleague.com/accounts/login/';
@@ -16,30 +27,121 @@ function Authenticate
         'user-agent'          = $UserAgent
     };
 
-    $FplSession;
+    return $FplSession;
 }
 
-function ScrapeFPLWebSite($session, $url)
+function AuthenticationCheck
 {
+<#
+    .SYNOPSIS
+        Common Authenitcation function
+    .DESCRIPTION
+        This function is used to authenticate with the
+        FPL website.  It requests username and password,
+        then calls the authenticate function to get a 
+        websession.  To test if we're successfully 
+        authenticated, it opens the FPL API can attempts
+        to get the user's player ID.  If it doesn't 
+        successfully return this, then we're not 
+        authenticated.  It returns an object with the 
+        websession and a boolean value informing us 
+        whether or not we're successfully authenticated.
+#> 
+    $authenticated = $false;
+    $retry = 1;
+    Write-Host "Attempt to authenticate on the FPL Server" -ForegroundColor Green;
+    while (-not $authenticated)
+    {
+        $session = Authenticate;
+        # Test whether or not we're logged in
+        $userJson = ScrapeFPLWebSite $session "https://fantasy.premierleague.com/api/me/";
+        if (-not ($userJson.player.id)) 
+        {
+            Write-Host "Invalid credentials, please try again" -ForegroundColor Red;
+            $authenticated = $false;  
+            $retry++;
+            if ($retry -gt 3) 
+            {
+                throw 'Invalid credentials';
+            }
+        }
+        else
+        {
+            Write-Host "Successfully authenticated on the FPL Server" -ForegroundColor Green;
+            $authenticated = $true;
+        }
+    }
+
+    return New-Object PsObject -Property @{
+                                            Session = $session;
+                                            Authenticated = $authenticated;
+                                          };
+}
+
+function ScrapeFPLWebSite
+{
+<#
+    .SYNOPSIS
+        Common Web Scrape function.
+    .DESCRIPTION
+        This function takes a URL and a Web Session.
+        It connects to the given URL then returns the
+        contents.  We're expecting this to be JSON from
+        the FPL API.
+#> 
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        $session, 
+        [Parameter(Mandatory = $true)]
+        $url
+    )
     $json = Invoke-RestMethod -Uri $url -WebSession $session -UseBasicParsing;
     # Sleep, be as kind as possible to the FPL servers!
     Start-Sleep -Seconds 2.5;
-    $json;
+    return $json;
 }
 
-function EncodeString([string]$string)
+function EncodeString
 {
+<#
+    .SYNOPSIS
+        Common string encoding function
+    .DESCRIPTION
+        This function encodes a string to ensure that 
+        non-latin based characters are returned correctly.
+#> 
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        $string
+    )
     # Encoding, ugly fix for bug #6
     $utf8 = [System.Text.Encoding]::GetEncoding(65001);
     $iso88591 = [System.Text.Encoding]::GetEncoding(28591);
     $stringBytes = $utf8.GetBytes($string);
     $stringEncoded = [System.Text.Encoding]::Convert($utf8,$iso88591,$stringBytes);
     $newString = $utf8.GetString($stringEncoded);
-    $newString;
+    return $newString;
 }
 
-function CreateInitialLeagueStructure($jsonArray)
+# Declare the specific functions
+function CreateInitialLeagueStructure
 {
+<#
+    .SYNOPSIS
+        Create Initial League Structure
+    .DESCRIPTION
+        This function takes an object which is parsed 
+        into the initial league structure.
+#> 
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        $jsonArray,
+        [Parameter(Mandatory = $true)]
+        $session
+    )
     $unstructured = @();
     foreach($json in $jsonArray)
     {
@@ -76,11 +178,23 @@ function CreateInitialLeagueStructure($jsonArray)
         }
     }
     
-    $unstructured;
+    return $unstructured;
 }
 
-function OrderStructure($structure)
+function OrderStructure
 {
+<#
+    .SYNOPSIS
+        Order a structure by the rank
+    .DESCRIPTION
+        This function takes an object which is unsorted,
+        then sorts it via the rank.
+#> 
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        $structure
+    )
     $rankedStructure = $structure | Group-Object GameWeek | ForEach-Object { 
           $rank = 0
           $_.Group | Sort-Object OverallPoints -Descending | Select-Object *, @{ 
@@ -88,11 +202,23 @@ function OrderStructure($structure)
           }
     };
 
-    $rankedStructure;
+    return $rankedStructure;
 }
 
-function CreateLeagueStructure($structure)
+function CreateLeagueStructure
 {
+<#
+    .SYNOPSIS
+        Create correct league structure
+    .DESCRIPTION
+        This function makes a structure where the team is the
+        key and the gameweek list object is the value
+#> 
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        $structure
+    )
     $leagueTable = @();
     foreach($info in $structure)
     {
@@ -126,11 +252,25 @@ function CreateLeagueStructure($structure)
         }
     }
 
-    $leagueTable;
+    return $leagueTable;
 }
 
-function CreateChart($league, $form)
+function CreateChart
 {
+<#
+    .SYNOPSIS
+        Create the chart
+    .DESCRIPTION
+        This function creates a league chart based on 
+        the league object passed in.
+#> 
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        $league,
+        [Parameter(Mandatory = $true)]
+        $form
+    )
     $totalPlayers = $league.Count;
     $leagueChart = New-object System.Windows.Forms.DataVisualization.Charting.Chart;
     $leagueChart.Width = ([System.Windows.Forms.SystemInformation]::PrimaryMonitorSize.Width) - 200;
@@ -180,11 +320,26 @@ function CreateChart($league, $form)
         $leagueChart.Series[$team.Manager].Points.DataBindXY($gameweekList, $gameweekRankList);
     }
 
-    $leagueChart;
+    return $leagueChart;
 }
 
-function CreateForm($chart, $saveChart)
+function CreateForm
 {
+<#
+    .SYNOPSIS
+        Create the WinForm output
+    .DESCRIPTION
+        This function creates a WinForm with the chart
+        on it.  This isn't very portable, may need to 
+        consider changing.
+#> 
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        $chart,
+        [Parameter(Mandatory = $true)]
+        $saveChart
+    )
     $Form = New-Object System.Windows.Forms.Form;
     $Form.Text = "PowerShell Chart";
     $SaveButton = New-Object System.Windows.Forms.Button;
@@ -199,47 +354,86 @@ function CreateForm($chart, $saveChart)
     $Form.ShowDialog();
 }
 
-cls;
-$authenticated = $false;
-$retry = 1;
-while (-not $authenticated)
+function LeagueNumber
 {
-    $session = Authenticate;
-    # Test whether or not we're logged in
-    $userJson = ScrapeFPLWebSite $session "https://fantasy.premierleague.com/api/me/";
-    if (-not ($userJson.player.id)) 
+<#
+    .SYNOPSIS
+        Gets the league number from the user
+    .DESCRIPTION
+        This function requests the league number from
+        the user.
+#> 
+    $retry = 1;
+    $numeric = $false;
+    while (-not $numeric)
     {
-        Write-Host "Invalid credentials, please try again" -ForegroundColor Red;
-        $authenticated = $false;  
+        Write-Host "Get the league number from the user" -ForegroundColor Green;
+        $leagueId = [Microsoft.VisualBasic.Interaction]::InputBox('Please enter the league number:', 'League Number');
+        $numeric = $leagueId -match '^\d+$';
         $retry++;
         if ($retry -gt 3) 
         {
-            throw 'Invalid credentials';
+            throw 'Invalid league ID';
+        }
+
+        if (-not $numeric)
+        {
+            Write-Host "The typed league number is not numeric.  Expecting the numeric value in the league URL between '/leagues/' and '/standings/'" -ForegroundColor Red;
         }
     }
-    else
-    {
-        $authenticated = $true;
-    }
+
+    return New-Object PsObject -Property @{
+                                            LeagueID = $leagueId;
+                                            Valid = $numeric;
+                                          };
 }
 
-if ($authenticated)
+function GatherUnstructuredLeagueData
 {
+<#
+    .SYNOPSIS
+        Gets the basic JSON of the league
+    .DESCRIPTION
+        This function loops over the pages of the league 
+        and saves the JSON to an object.
+#> 
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        $leagueId,
+        [Parameter(Mandatory = $true)]
+        $session
+    )
     $allleagueTablePage = @();
     $pageNumber = 1;
     $loop = $true;
     while ($loop)
-    {
-        $leagueTableJson = ScrapeFPLWebSite $session "https://fantasy.premierleague.com/api/leagues-classic/36351/standings/?page_standings=$pageNumber";
+    {    
+        $leagueTableJson = ScrapeFPLWebSite $session "https://fantasy.premierleague.com/api/leagues-classic/$leagueId/standings/?page_standings=$pageNumber";
         $allleagueTablePage += $leagueTableJson;
         $loop = $leagueTableJson.standings.has_next;
         $pageNumber++;
     }
 
-    $unstructuredAllData = CreateInitialLeagueStructure $allleagueTablePage;
-    $unstructuredAllData = OrderStructure $unstructuredAllData;
-    $leagueTable = CreateLeagueStructure $unstructuredAllData;
-    $formChart = CreateChart $leagueTable $true;
-    $saveChart = CreateChart $leagueTable $false;
-    CreateForm $formChart $saveChart;
+    return $allleagueTablePage;
+}
+
+# Clear the console, make it easier to see the relevant output
+cls;
+# Call out functions to generate the league chart
+$authenticationToken = AuthenticationCheck;
+if ($authenticationToken.Authenticated -eq $true)
+{
+    $leagueToken = LeagueNumber;
+
+    if ($leagueToken.Valid -eq $true)
+    {
+        $leagueTable = GatherUnstructuredLeagueData $leagueToken.LeagueID $authenticationToken.Session;
+        $leagueTable = CreateInitialLeagueStructure $leagueTable $authenticationToken.Session;
+        $leagueTable = OrderStructure $leagueTable;
+        $leagueTable = CreateLeagueStructure $leagueTable;
+        $formChart = CreateChart $leagueTable $true;
+        $saveChart = CreateChart $leagueTable $false;
+        CreateForm $formChart $saveChart;
+    }
 }
