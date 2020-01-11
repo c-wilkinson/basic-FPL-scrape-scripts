@@ -42,5 +42,5 @@ jobs:
         shell: powershell
         run: |
           cd PowerShell
-          powershell -Command .\Mini-League-History-Charting.ps1 -username ${{ secrets.FPL_USERNAME }} -password ${{ secrets.FPL_PASSWORD }} -commandline $true -leagueNumber ${{ secrets.FPL_LEAGUE_NUMBER }}
+          powershell -Command .\Mini-League-History-Charting.ps1 -username ${{ secrets.FPL_USERNAME }} -password ${{ secrets.FPL_PASSWORD }} -commandline $True -leagueNumber ${{ secrets.FPL_LEAGUE_NUMBER }}
         
