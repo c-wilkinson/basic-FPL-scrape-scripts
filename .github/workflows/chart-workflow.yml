@@ -28,11 +28,11 @@ on:
   - cron: '0 9 17 5 *'
 
 jobs:
-  scrapeFplAndChart:
-  
-  runs-on: windows-latest
-  
-  run:
-      cd PowerShell
-      .\FPL.ps1 -username ${{ secrets.FPL_USERNAME }} -password ${{ secrets.FPL_PASSWORD }} -commandline $true -leagueNumber ${{ secrets.FPL_LEAGUE_NUMBER }}
-      
+  build:
+    name: Chart
+    runs-on: windows-latest
+    steps:
+      - name: Create Chart
+        run: |
+        cd PowerShell
+        .\FPL.ps1 -username ${{ secrets.FPL_USERNAME }} -password ${{ secrets.FPL_PASSWORD }} -commandline $true -leagueNumber ${{ secrets.FPL_LEAGUE_NUMBER }}
