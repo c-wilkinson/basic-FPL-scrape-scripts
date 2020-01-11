@@ -1,4 +1,4 @@
-[![Workflow Status](https://github.com/c-wilkinson/basic-FPL-scrape-scripts/workflows/Run%20chart%20script/badge.svg)](https://github.com/c-wilkinson/basic-FPL-scrape-scripts/actions)
+[![Workflow Status](https://github.com/c-wilkinson/basic-FPL-scrape-scripts/workflows/Mini-League-History-Charting%20Powershell%20Script/badge.svg)](https://github.com/c-wilkinson/basic-FPL-scrape-scripts/actions)
 [![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](http://unlicense.org/)
 
 # basic-FPL-scrape-scripts
