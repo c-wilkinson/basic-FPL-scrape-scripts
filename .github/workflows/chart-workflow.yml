@@ -1,4 +1,4 @@
-name: Run chart script
+name: Powershell Mini League History Charting Script
 
 on:
   push:
