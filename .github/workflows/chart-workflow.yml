@@ -1,4 +1,4 @@
-name: Mini League History Charting
+name: Run chart script
 
 on:
   push:
