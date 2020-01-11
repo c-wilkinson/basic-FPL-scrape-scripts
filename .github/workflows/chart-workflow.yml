@@ -36,5 +36,8 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Create Chart
-        run: powershell .\PowerShell\Mini-League-History-Charting.ps1 -username ${{ secrets.FPL_USERNAME }} -password ${{ secrets.FPL_PASSWORD }} -commandline $true -leagueNumber ${{ secrets.FPL_LEAGUE_NUMBER }}
+        shell: powershell
+        run: |
+          cd PowerShell
+          powershell .\Mini-League-History-Charting.ps1 -username ${{ secrets.FPL_USERNAME }} -password ${{ secrets.FPL_PASSWORD }} -commandline $true -leagueNumber ${{ secrets.FPL_LEAGUE_NUMBER }}
         
