@@ -1,5 +1,4 @@
-name: Run chart script
-
+name: Mini-League-History-Charting Powershell Script
 on:
   push:
     branches: 
@@ -43,4 +42,3 @@ jobs:
         run: |
           cd PowerShell
           powershell -Command .\Mini-League-History-Charting.ps1 -username ${{ secrets.FPL_USERNAME }} -password ${{ secrets.FPL_PASSWORD }} -commandline 1 -leagueNumber ${{ secrets.FPL_LEAGUE_NUMBER }}
-        
