@@ -1,6 +1,9 @@
 name: Run chart script
 
 on:
+  push:
+    branches: 
+      - master
   schedule:
   - cron: '30 15 3 12 *'
   - cron: '30 8 7 12 *'
