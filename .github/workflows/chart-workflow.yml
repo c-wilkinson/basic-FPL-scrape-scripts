@@ -35,6 +35,9 @@ jobs:
     name: Chart
     runs-on: windows-latest
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v1
+        
       - name: Create Chart
         shell: powershell
         run: |
