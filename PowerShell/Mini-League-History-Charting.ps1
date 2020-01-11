@@ -1,3 +1,13 @@
+param(
+    [Parameter(Mandatory=$true, ValueFromPipeline=$false)]
+    [bool]$commandline,
+    [Parameter(Mandatory=$false, ValueFromPipeline=$false)]
+    [string]$username,
+    [Parameter(Mandatory=$false, ValueFromPipeline=$false)]
+    [string]$password,
+    [Parameter(Mandatory=$false, ValueFromPipeline=$false)]
+    [int32]$leagueNumber
+)
 # Add the required assemblies
 Add-Type -AssemblyName System.Windows.Forms.DataVisualization
 Add-Type -AssemblyName Microsoft.VisualBasic
@@ -12,7 +22,15 @@ function Authenticate
         This function is used to authenticate with the
         FPL website.  It returns a websession.
 #>    
-    $Credential = Get-Credential -Message 'Please enter your FPL login details';
+    if ($commandline -eq $false)
+    {
+        $Credential = Get-Credential -Message 'Please enter your FPL login details';
+    }
+    else
+    {
+        $securePassword = $password | ConvertTo-SecureString -asPlainText -Force;
+        $Credential = New-Object System.Management.Automation.PSCredential($username,$securePassword);
+    }
     $UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.19 Safari/537.36";
     $Uri = 'https://users.premierleague.com/accounts/login/';
     [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls";
@@ -50,17 +68,24 @@ function AuthenticationCheck
     $authenticated = $false;
     $retry = 1;
     Write-Host "Attempt to authenticate on the FPL Server" -ForegroundColor Green;
-    while (-not $authenticated)
+    while ($retry -lt 3)
     {
         $session = Authenticate;
         # Test whether or not we're logged in
         $userJson = ScrapeFPLWebSite $session "https://fantasy.premierleague.com/api/me/";
         if (-not ($userJson.player.id)) 
         {
-            Write-Host "Invalid credentials, please try again" -ForegroundColor Red;
-            $authenticated = $false;  
-            $retry++;
-            if ($retry -gt 3) 
+            if ($commandline -eq $false)
+            {
+                Write-Host "Invalid credentials, please try again" -ForegroundColor Red;
+                $authenticated = $false;  
+                $retry++;
+                if ($retry -eq 3) 
+                {
+                    throw 'Invalid credentials';
+                }
+            }
+            else
             {
                 throw 'Invalid credentials';
             }
@@ -69,6 +94,7 @@ function AuthenticationCheck
         {
             Write-Host "Successfully authenticated on the FPL Server" -ForegroundColor Green;
             $authenticated = $true;
+            $retry = 3;
         }
     }
 
@@ -420,11 +446,28 @@ function GatherUnstructuredLeagueData
 
 # Clear the console, make it easier to see the relevant output
 cls;
+if ($commandline -eq $true)
+{
+    if (-not $username -or -not $password -or -not $leagueNumber)
+    {
+        throw 'Command line execution must include username, password and leagueNumber';
+    }
+}
 # Call out functions to generate the league chart
 $authenticationToken = AuthenticationCheck;
 if ($authenticationToken.Authenticated -eq $true)
 {
-    $leagueToken = LeagueNumber;
+    if ($commandline -eq $false)
+    {
+        $leagueToken = LeagueNumber;
+    }
+    else
+    {
+        $leagueToken = New-Object PsObject -Property @{
+                                                        LeagueID = $leagueNumber;
+                                                        Valid = $true;
+                                                      };
+    }
 
     if ($leagueToken.Valid -eq $true)
     {
@@ -434,6 +477,13 @@ if ($authenticationToken.Authenticated -eq $true)
         $leagueTable = CreateLeagueStructure $leagueTable;
         $formChart = CreateChart $leagueTable $true;
         $saveChart = CreateChart $leagueTable $false;
-        CreateForm $formChart $saveChart;
+        if ($commandline -eq $false)
+        {
+            CreateForm $formChart $saveChart;
+        }
+        else
+        {
+            $saveChart.SaveImage($Env:USERPROFILE + "\Desktop\Chart.png", "PNG");
+        }
     }
 }
