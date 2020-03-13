@@ -5,7 +5,7 @@ This repository represents my interest in numbers, fantasy football and experime
 
 ### PowerShell
 #### PSFPLInfo
-[![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](http://unlicense.org/)[![Workflow Status](https://github.com/c-wilkinson/basic-FPL-scrape-scripts/workflows/Create%20Mini-League%20Chart/badge.svg)](https://github.com/c-wilkinson/basic-FPL-scrape-scripts/actions)[![Workflow Status](https://github.com/c-wilkinson/basic-FPL-scrape-scripts/workflows/AuthenticationTests/badge.svg)](https://github.com/c-wilkinson/basic-FPL-scrape-scripts/actions)
+[![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](http://unlicense.org/)![Create Mini-League Chart](https://github.com/c-wilkinson/basic-FPL-scrape-scripts/workflows/Create%20Mini-League%20Chart/badge.svg)![AuthenticationTests](https://github.com/c-wilkinson/basic-FPL-scrape-scripts/workflows/AuthenticationTests/badge.svg)
 
 https://www.powershellgallery.com/packages/PSFPLInfo
 
