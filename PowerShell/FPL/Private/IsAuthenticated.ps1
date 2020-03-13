@@ -5,13 +5,14 @@ function IsAuthenticated
         Common Authenitcation function
     .DESCRIPTION
         This function is used to check if a 
-		session is a valid authenticated FPL
-		session
+        session is a valid authenticated FPL
+        session
 #> 
     [cmdletbinding()]
     param(
         [object]$session
     )
+    Write-Verbose "Check credentials";
     $authenticated = $false;
     # Test whether or not we're logged in
     $userJson = Get-Data $session "https://fantasy.premierleague.com/api/me/";

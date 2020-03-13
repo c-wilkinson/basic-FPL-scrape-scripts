@@ -12,37 +12,41 @@ function Get-League
         [int]$leagueId,
         [object]$session
     )
+    Write-Verbose "Attempt to build a structure of the specific mini-league";
     $structure = CreateInitialLeagueStructure $leagueId $session;
     $leagueTable = @();
     foreach($info in $structure)
     {
-        $currentdata = $leagueTable | Where-Object {$_.TeamId -eq $info.TeamId};
-        $gameweek = New-Object PsObject -Property @{
-                                                     GameWeek = $info.GameWeek;
-                                                     GameWeekPoints = $info.GameWeekPoints;
-                                                     PointsOnBench = $info.PointsOnBench;
-                                                     TransfersMade = $info.TransfersMade;
-                                                     TransfersCode = $info.TransfersCode;
-                                                     OverallPoints = $info.OverallPoints;
-                                                     GameWeekRank = $info.GameWeekRank;
-                                                  };
-        if ($currentdata -ne $null)
+        if ($info.Manager)
         {
-            $index = $leagueTable.IndexOf($currentdata);
-            $currentdata.GameWeekHistory += $gameweek;
-            $leagueTable[$index] = $currentdata;
-        }
-        else
-        {
-            $gameweekHistoryArray = @();
-            $gameweekHistoryArray += $gameweek;
-            $leagueTable += New-Object PsObject -Property @{
-                                                             TeamValue = $info.TeamValue;
-                                                             TeamId = $info.TeamId;
-                                                             Manager = $info.Manager;
-                                                             TeamName = $info.TeamName;
-                                                             GameWeekHistory = $gameweekHistoryArray;
-                                                           };
+            $currentdata = $leagueTable | Where-Object {$_.TeamId -eq $info.TeamId};
+            $gameweek = New-Object PsObject -Property @{
+                                                         GameWeek = $info.GameWeek;
+                                                         GameWeekPoints = $info.GameWeekPoints;
+                                                         PointsOnBench = $info.PointsOnBench;
+                                                         TransfersMade = $info.TransfersMade;
+                                                         TransfersCode = $info.TransfersCode;
+                                                         OverallPoints = $info.OverallPoints;
+                                                         GameWeekRank = $info.GameWeekRank;
+                                                      };
+            if ($currentdata -ne $null)
+            {
+                $index = $leagueTable.IndexOf($currentdata);
+                $currentdata.GameWeekHistory += $gameweek;
+                $leagueTable[$index] = $currentdata;
+            }
+            else
+            {
+                $gameweekHistoryArray = @();
+                $gameweekHistoryArray += $gameweek;
+                $leagueTable += New-Object PsObject -Property @{
+                                                                 TeamValue = $info.TeamValue;
+                                                                 TeamId = $info.TeamId;
+                                                                 Manager = $info.Manager;
+                                                                 TeamName = $info.TeamName;
+                                                                 GameWeekHistory = $gameweekHistoryArray;
+                                                               };
+            }
         }
     }
 

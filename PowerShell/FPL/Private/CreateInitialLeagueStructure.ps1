@@ -12,7 +12,8 @@ function CreateInitialLeagueStructure
         [int]$leagueId,
         [object]$session
     )
-	$allleagueTablePage = @();
+    Write-Verbose "Create the initial league structure object";
+    $allleagueTablePage = @();
     $pageNumber = 1;
     $loop = $true;
     while ($loop)
@@ -22,7 +23,7 @@ function CreateInitialLeagueStructure
         $loop = $leagueTableJson.standings.has_next;
         $pageNumber++;
     }
-	
+    
     $unstructured = @();
     foreach($json in $allleagueTablePage)
     {
@@ -59,7 +60,7 @@ function CreateInitialLeagueStructure
         }
     }
     
-	$rankedStructure = $unstructured | Group-Object GameWeek | ForEach-Object { 
+    $rankedStructure = $unstructured | Group-Object GameWeek | ForEach-Object { 
           $rank = 0
           $_.Group | Sort-Object OverallPoints -Descending | Select-Object *, @{ 
           n='GameWeekRank'; e={ Set-Variable -Scope 1 rank ($rank+1); $rank } 

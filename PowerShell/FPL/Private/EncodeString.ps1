@@ -12,6 +12,7 @@ function EncodeString
         [string]$string
     )
     # Encoding, ugly fix for bug #6
+    Write-Verbose "Encode $string";
     $utf8 = [System.Text.Encoding]::GetEncoding(65001);
     $iso88591 = [System.Text.Encoding]::GetEncoding(28591);
     $stringBytes = $utf8.GetBytes($string);

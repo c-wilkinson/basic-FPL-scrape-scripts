@@ -12,8 +12,9 @@ function Authenticate
         [string]$username,
         [string]$password
     )
+    Write-Verbose "Attempt to authenticate with FPL servers";
     $securePassword = $password | ConvertTo-SecureString -asPlainText -Force;
-    $Credential = New-Object System.Management.Automation.PSCredential($username,$securePassword);	
+    $Credential = New-Object System.Management.Automation.PSCredential($username,$securePassword);    
     $UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.19 Safari/537.36";
     $Uri = 'https://users.premierleague.com/accounts/login/';
     [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls";
@@ -28,12 +29,12 @@ function Authenticate
         'user-agent'          = $UserAgent
     };
     
-	if (IsAuthenticated $session)
-	{
-	    return $session;
-	}
-	else
-	{
-	    throw "Erorr authenticating";
-	}
+    if (IsAuthenticated $session)
+    {
+        return $session;
+    }
+    else
+    {
+        throw "Erorr authenticating";
+    }
 }
