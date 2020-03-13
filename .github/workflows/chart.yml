@@ -42,5 +42,5 @@ jobs:
           cd PowerShell
           cd PSFPLInfo
           cd Tests
-          powershell -Command ".\Chart.ps1 -username ${{ secrets.FPL_USERNAME }} -password ${{ secrets.FPL_PASSWORD }} -leagueId ${{ secrets.FPL_LEAGUE_NUMBER }} -ssh ${{ secrets.SSH_KEY }} -gituser ${{ secrets.GITHUB_USER }} -gitemail ${{ secrets.GITHUB_EMAIL }}"
+          powershell -Command ".\Chart.ps1 -username ${{ secrets.FPL_USERNAME }} -password ${{ secrets.FPL_PASSWORD }} -leagueId ${{ secrets.FPL_LEAGUE_NUMBER }}
           

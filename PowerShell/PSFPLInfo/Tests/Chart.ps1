@@ -1,4 +1,4 @@
-param ([string]$username, [string]$password, [int]$leagueId, [string]$ssh, [string]$gituser, [string]$gitemail)
+param ([string]$username, [string]$password, [int]$leagueId)
 Import-Module -Name $PSScriptRoot\..\PSFPLInfo -Force
 $session = Authenticate $username $password;
 $league = Get-League $leagueId $session;
