@@ -3,6 +3,7 @@ on:
   push:
     branches: 
       - master
+      - Dev
 
 jobs:
   build:
