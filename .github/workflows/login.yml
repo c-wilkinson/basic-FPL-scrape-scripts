@@ -1,0 +1,27 @@
+name: AuthenticationTests
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+jobs:
+  build:
+    # The type of runner that the job will run on
+    runs-on: windows-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v1
+    - name: Incorrect Login
+      shell: powershell
+      run: |
+          cd PowerShell
+          cd PSFPLInfo
+          cd Tests
+          powershell -Command ".\IncorrectLogin.ps1"
+    - name: Correct Login
+      shell: powershell
+      run: |
+          cd PowerShell
+          cd PSFPLInfo
+          cd Tests
+          powershell -Command ".\CorrectLogin.ps1"                
