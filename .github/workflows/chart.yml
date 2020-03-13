@@ -17,7 +17,6 @@ jobs:
           cd PowerShell
           cd FPL
           powershell -Command "Import-Module .\PSFPLInfo.psm1"
-          cd..
           cd Tests
           powershell -Command ".\Chart.ps1"
           
