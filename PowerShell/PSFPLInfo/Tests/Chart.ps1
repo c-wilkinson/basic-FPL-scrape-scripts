@@ -5,8 +5,8 @@ $league = Get-League $leagueId $session;
 $chart = Chart $league;
 $chart.SaveImage("Chart.png", "PNG");
 cd..
-New-Item -ItemType Directory -Force -Path $PSScriptRoot\Output;
-Move-Item -Path $PSScriptRoot\Tests\Chart.png -Destination $PSScriptRoot\Output\Chart.png
+New-Item -ItemType Directory -Force -Path $PSScriptRoot\..\Output;
+Move-Item -Path $PSScriptRoot\Chart.png -Destination $PSScriptRoot\..\Output\Chart.png
 Git add .;
 Git config --local user.email "$gitemail";
 Git config --local user.name "$gituser";
