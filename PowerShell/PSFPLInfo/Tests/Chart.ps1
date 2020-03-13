@@ -1,7 +1,5 @@
 param ([string]$username, [string]$password, [int]$leagueId)
-# This is ugly. . . will fix later
-cd..
-Import-Module .\PSFPLInfo.psm1
+Install-Module -Name PSFPLInfo
 cd Tests
 $session = Authenticate $username $password;
 $league = Get-League $leagueId $session;
