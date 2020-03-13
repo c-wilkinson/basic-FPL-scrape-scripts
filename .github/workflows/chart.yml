@@ -17,4 +17,7 @@ jobs:
           cd PowerShell
           cd FPL
           powershell -Command "Import-Module .\PSFPLInfo.psm1"
-          powershell -Command "$session = Authenticate -username ${{ secrets.FPL_USERNAME }} -password ${{ secrets.FPL_PASSWORD }}; $league = Get-League -leagueId ${{ secrets.FPL_LEAGUE_NUMBER }} -session $session; $chart = Chart -league $league;"
+          cd..
+          cd Tests
+          powershell -Command ".\Chart.ps1"
+          
