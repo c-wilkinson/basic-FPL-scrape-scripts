@@ -15,7 +15,7 @@ jobs:
       shell: powershell
       run: |
           cd PowerShell
-          cd FPL
+          cd PSFPLInfo
           cd Tests
           powershell -Command ".\Chart.ps1 -username ${{ secrets.FPL_USERNAME }} -password ${{ secrets.FPL_PASSWORD }} -leagueId ${{ secrets.FPL_LEAGUE_NUMBER }}"
           
