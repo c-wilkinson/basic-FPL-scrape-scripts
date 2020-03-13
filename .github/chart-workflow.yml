@@ -3,31 +3,6 @@ on:
   push:
     branches: 
       - master
-  schedule:
-  - cron: '30 15 3 12 *'
-  - cron: '30 8 7 12 *'
-  - cron: '30 7 14 12 *'
-  - cron: '30 7 21 12 *'
-  - cron: '30 7 26 12 *'
-  - cron: '30 9 28 12 *'
-  - cron: '30 7 1 1 *'
-  - cron: '0 15 10 1 *'
-  - cron: '30 7 18 1 *'
-  - cron: '30 14 21 1 *'
-  - cron: '0 10 1 2 *'
-  - cron: '0 10 8 2 *'
-  - cron: '0 10 22 2 *'
-  - cron: '0 10 29 2 *'
-  - cron: '0 10 7 3 *'
-  - cron: '0 10 14 3 *'
-  - cron: '0 10 21 3 *'
-  - cron: '0 9 4 4 *'
-  - cron: '0 9 11 4 *'
-  - cron: '0 9 18 4 *'
-  - cron: '0 9 25 4 *'
-  - cron: '0 9 2 5 *'
-  - cron: '0 9 9 5 *'
-  - cron: '0 9 17 5 *'
 
 jobs:
   build:
