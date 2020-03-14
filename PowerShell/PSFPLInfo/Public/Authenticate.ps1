@@ -8,6 +8,7 @@ function Authenticate
         FPL website.  It returns a websession.
 #>    
     [cmdletbinding()]
+	[OutputType([object])]
     param(
         [Parameter(Mandatory=$true)][string]$username,
         [Parameter(Mandatory=$true)][string]$password

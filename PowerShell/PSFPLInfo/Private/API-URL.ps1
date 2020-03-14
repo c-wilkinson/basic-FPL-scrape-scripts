@@ -8,6 +8,7 @@ function API-URL
         location for updating URLs if required
 #> 
     [CmdletBinding()]
+	[OutputType([string])]
     param(
         [Parameter(Mandatory=$true)][string]$api,
         [Parameter(Mandatory=$false)][string]$arg1,

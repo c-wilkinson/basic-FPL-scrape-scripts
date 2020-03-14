@@ -9,6 +9,7 @@ function IsAuthenticated
         session
 #> 
     [cmdletbinding()]
+    [OutputType([bool])]
     param(
         [Parameter(Mandatory=$true)][object]$session
     )

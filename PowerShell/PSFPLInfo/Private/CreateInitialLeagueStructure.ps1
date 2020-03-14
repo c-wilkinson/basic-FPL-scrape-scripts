@@ -8,6 +8,7 @@ function CreateInitialLeagueStructure
         into the initial league structure.
 #> 
     [CmdletBinding()]
+	[OutputType([object])]
     param(
         [Parameter(Mandatory=$true)][int]$leagueId,
         [Parameter(Mandatory=$true)][object]$session

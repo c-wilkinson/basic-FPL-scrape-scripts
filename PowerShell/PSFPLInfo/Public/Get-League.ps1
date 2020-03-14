@@ -8,6 +8,7 @@ function Get-League
         key and the gameweek list object is the value
 #> 
     [CmdletBinding()]
+	[OutputType([object])]
     param(
         [Parameter(Mandatory=$true)][int]$leagueId,
         [Parameter(Mandatory=$true)][object]$session

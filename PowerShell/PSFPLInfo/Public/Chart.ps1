@@ -11,6 +11,7 @@ function Chart
         the league object passed in.
 #> 
     [CmdletBinding()]
+	[OutputType([object])]
     param(
         [Parameter(Mandatory=$true)][object]$league
     )
