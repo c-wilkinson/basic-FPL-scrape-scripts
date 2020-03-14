@@ -1,46 +1,27 @@
-name: Create Mini-League Chart
+name: ChartCreationTests
 on:
   push:
     branches: [ master ]
   pull_request:
     branches: [ master ]
-  schedule:
-  - cron: '30 15 3 12 *'
-  - cron: '30 8 7 12 *'
-  - cron: '30 7 14 12 *'
-  - cron: '30 7 21 12 *'
-  - cron: '30 7 26 12 *'
-  - cron: '30 9 28 12 *'
-  - cron: '30 7 1 1 *'
-  - cron: '0 15 10 1 *'
-  - cron: '30 7 18 1 *'
-  - cron: '30 14 21 1 *'
-  - cron: '0 10 1 2 *'
-  - cron: '0 10 8 2 *'
-  - cron: '0 10 22 2 *'
-  - cron: '0 10 29 2 *'
-  - cron: '0 10 7 3 *'
-  - cron: '0 10 14 3 *'
-  - cron: '0 10 21 3 *'
-  - cron: '0 9 4 4 *'
-  - cron: '0 9 11 4 *'
-  - cron: '0 9 18 4 *'
-  - cron: '0 9 25 4 *'
-  - cron: '0 9 2 5 *'
-  - cron: '0 9 9 5 *'
-  - cron: '0 9 17 5 *'    
 jobs:
   build:
+    # The type of runner that the job will run on
     runs-on: windows-latest
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v1
-      
-    - name: Create Chart
+    - name: Chart Created
       shell: powershell
       run: |
           cd PowerShell
           cd PSFPLInfo
           cd Tests
-          powershell -Command ".\Chart.ps1 -username ${{ secrets.FPL_USERNAME }} -password ${{ secrets.FPL_PASSWORD }} -leagueId ${{ secrets.FPL_LEAGUE_NUMBER }}"
-          
+          powershell -Command ".\CreateChartExists.ps1"
+    - name: Correct Login
+      shell: powershell
+      run: |
+          cd PowerShell
+          cd PSFPLInfo
+          cd Tests
+          powershell -Command ".\CreateChartSize.ps1"

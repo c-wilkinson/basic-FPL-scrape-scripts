@@ -9,10 +9,5 @@ try
 catch
 {
     # Exception caught, so we failed to authenticate
-    $testState = 1;
-}
-
-if ($testState -eq 1)
-{
     throw "FailedTest";
 }
