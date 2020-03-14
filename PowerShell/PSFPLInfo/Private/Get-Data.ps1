@@ -11,8 +11,8 @@ function Get-Data
 #> 
     [CmdletBinding()]
     param(
-        [object]$session, 
-        [string]$url
+        [Parameter(Mandatory=$true)][object]$session, 
+        [Parameter(Mandatory=$true)][string]$url
     )
     Write-Verbose "Scraping $url";
     $json = Invoke-RestMethod -Uri $url -WebSession $session -UseBasicParsing;

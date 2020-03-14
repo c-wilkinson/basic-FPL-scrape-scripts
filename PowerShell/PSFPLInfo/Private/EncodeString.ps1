@@ -9,7 +9,7 @@ function EncodeString
 #> 
     [CmdletBinding()]
     param(
-        [string]$string
+        [Parameter(Mandatory=$true)][string]$string
     )
     # Encoding, ugly fix for bug #6
     Write-Verbose "Encode $string";

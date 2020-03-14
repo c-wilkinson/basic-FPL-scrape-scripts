@@ -12,7 +12,7 @@ function Chart
 #> 
     [CmdletBinding()]
     param(
-        [object]$league
+        [Parameter(Mandatory=$true)][object]$league
     )
     $totalPlayers = $league.Count;
     Write-Verbose "League has $totalPlayers players";

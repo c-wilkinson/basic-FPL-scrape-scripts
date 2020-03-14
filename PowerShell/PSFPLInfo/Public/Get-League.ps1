@@ -9,8 +9,8 @@ function Get-League
 #> 
     [CmdletBinding()]
     param(
-        [int]$leagueId,
-        [object]$session
+        [Parameter(Mandatory=$true)][int]$leagueId,
+        [Parameter(Mandatory=$true)][object]$session
     )
     Write-Verbose "Attempt to build a structure of the specific mini-league";
     $structure = CreateInitialLeagueStructure $leagueId $session;
