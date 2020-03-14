@@ -3,6 +3,8 @@ This repository represents my interest in numbers, fantasy football and experime
 
 [![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](http://unlicense.org/)
 
+[![CodeFactor](https://www.codefactor.io/repository/github/c-wilkinson/basic-fpl-scrape-scripts/badge/master)](https://www.codefactor.io/repository/github/c-wilkinson/basic-fpl-scrape-scripts/overview/master)
+
 ### PowerShell
 #### PSFPLInfo
 [![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](http://unlicense.org/)![Create Mini-League Chart For Work Mini-League](https://github.com/c-wilkinson/basic-FPL-scrape-scripts/workflows/Create%20Mini-League%20Chart%20For%20Work%20Mini-League/badge.svg)![AuthenticationTests](https://github.com/c-wilkinson/basic-FPL-scrape-scripts/workflows/AuthenticationTests/badge.svg)![ChartCreationTests](https://github.com/c-wilkinson/basic-FPL-scrape-scripts/workflows/ChartCreationTests/badge.svg)
