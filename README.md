@@ -1,6 +1,7 @@
 # basic-FPL-scrape-scripts
 This repository represents my interest in numbers, fantasy football and experimentation with languages I don't often use.  I'll split the repository by language then by title.  The whole thing is covered under a "do as you wish" license.
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c322c6f6792c4d0f9a8d7f2c09786d70)](https://app.codacy.com/manual/c-wilkinson/basic-FPL-scrape-scripts?utm_source=github.com&utm_medium=referral&utm_content=c-wilkinson/basic-FPL-scrape-scripts&utm_campaign=Badge_Grade_Dashboard)
 [![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](http://unlicense.org/)
 
 [![CodeFactor](https://www.codefactor.io/repository/github/c-wilkinson/basic-fpl-scrape-scripts/badge/master)](https://www.codefactor.io/repository/github/c-wilkinson/basic-fpl-scrape-scripts/overview/master)
