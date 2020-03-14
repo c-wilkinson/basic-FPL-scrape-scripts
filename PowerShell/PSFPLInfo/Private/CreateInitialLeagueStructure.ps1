@@ -19,7 +19,7 @@ function CreateInitialLeagueStructure
     $loop = $true;
     while ($loop)
     {    
-        $leagueTableJson = Get-Data $session (API-URL "classic" "$leagueId" "$pageNumber");
+        $leagueTableJson = Get-Data $session (Get-URLFromAPI "classic" "$leagueId" "$pageNumber");
         $allleagueTablePage += $leagueTableJson;
         $loop = $leagueTableJson.standings.has_next;
         $pageNumber++;
@@ -33,7 +33,7 @@ function CreateInitialLeagueStructure
             foreach($team in $leaguePage.results)
             {
                 $teamId = $team.entry;
-                $teamurl = (API-URL "team" "$teamId");
+                $teamurl = (Get-URLFromAPI "team" "$teamId");
                 $teamName = EncodeString $team.entry_name;
                 $manager = EncodeString $team.player_name;
                 $score = $team.total;

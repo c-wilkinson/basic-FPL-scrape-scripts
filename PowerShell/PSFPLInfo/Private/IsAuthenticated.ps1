@@ -16,7 +16,7 @@ function IsAuthenticated
     Write-Verbose "Check credentials";
     $authenticated = $false;
     # Test whether or not we're logged in
-    $userJson = Get-Data $session (API-URL "me");
+    $userJson = Get-Data $session (Get-URLFromAPI "me");
     if (-not ($userJson.player.id)) 
     {
         Write-Verbose "Invalid credentials";

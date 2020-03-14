@@ -1,4 +1,4 @@
-function API-URL
+function Get-URLFromAPI
 {
 <#
     .SYNOPSIS
