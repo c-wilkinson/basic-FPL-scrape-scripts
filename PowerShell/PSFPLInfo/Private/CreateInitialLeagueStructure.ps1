@@ -9,8 +9,8 @@ function CreateInitialLeagueStructure
 #> 
     [CmdletBinding()]
     param(
-        [int]$leagueId,
-        [object]$session
+        [Parameter(Mandatory=$true)][int]$leagueId,
+        [Parameter(Mandatory=$true)][object]$session
     )
     Write-Verbose "Create the initial league structure object";
     $allleagueTablePage = @();
@@ -18,7 +18,7 @@ function CreateInitialLeagueStructure
     $loop = $true;
     while ($loop)
     {    
-        $leagueTableJson = Get-Data $session "https://fantasy.premierleague.com/api/leagues-classic/$leagueId/standings/?page_standings=$pageNumber";
+        $leagueTableJson = Get-Data $session (API-URL "classic" "$leagueId" "$pageNumber");
         $allleagueTablePage += $leagueTableJson;
         $loop = $leagueTableJson.standings.has_next;
         $pageNumber++;
@@ -31,12 +31,12 @@ function CreateInitialLeagueStructure
         {
             foreach($team in $leaguePage.results)
             {
-                $teamurl = "https://fantasy.premierleague.com/api/entry/"+$team.entry+"/history/";
+                $teamId = $team.entry;
+                $teamurl = (API-URL "team" "$teamId");
                 $teamName = EncodeString $team.entry_name;
                 $manager = EncodeString $team.player_name;
                 $score = $team.total;
                 $rank = $team.rank;
-                $teamId = $team.entry;
                 Write-Output "Load gameweek history for $teamName";
                 $gameweekHistoryJson = Get-Data $session $teamurl;
                 foreach($gameweek in $gameweekHistoryJson.current)

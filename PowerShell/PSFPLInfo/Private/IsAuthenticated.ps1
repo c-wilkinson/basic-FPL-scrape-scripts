@@ -10,12 +10,12 @@ function IsAuthenticated
 #> 
     [cmdletbinding()]
     param(
-        [object]$session
+        [Parameter(Mandatory=$true)][object]$session
     )
     Write-Verbose "Check credentials";
     $authenticated = $false;
     # Test whether or not we're logged in
-    $userJson = Get-Data $session "https://fantasy.premierleague.com/api/me/";
+    $userJson = Get-Data $session (API-URL "me");
     if (-not ($userJson.player.id)) 
     {
         Write-Verbose "Invalid credentials";

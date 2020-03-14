@@ -28,14 +28,14 @@ on:
   - cron: '0 9 25 4 *'
   - cron: '0 9 2 5 *'
   - cron: '0 9 9 5 *'
-  - cron: '0 9 17 5 *'    
+  - cron: '0 9 17 5 *'
 jobs:
   build:
     runs-on: windows-latest
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v1
-      
+
     - name: Create Chart
       shell: powershell
       run: |
@@ -43,4 +43,3 @@ jobs:
           cd PSFPLInfo
           cd Tests
           powershell -Command ".\WorkMiniLeagueStatGeneration.ps1 -username ${{ secrets.FPL_USERNAME }} -password ${{ secrets.FPL_PASSWORD }} -leagueId ${{ secrets.FPL_LEAGUE_NUMBER }}"
-          
