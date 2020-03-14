@@ -12,7 +12,7 @@ for($gw=1; $gw -le 38; $gw++)
                                              OverallPoints = 90*$gw;
                                              GameWeekRank = 1;
                                           };
-    if ($currentdata -ne $null)
+    if ($currentdata)
     {
         $index = $leagueTable.IndexOf($currentdata);
         $currentdata.GameWeekHistory += $gameweek;

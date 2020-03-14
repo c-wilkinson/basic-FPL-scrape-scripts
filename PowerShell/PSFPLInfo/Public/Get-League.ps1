@@ -30,7 +30,7 @@ function Get-League
                                                          OverallPoints = $info.OverallPoints;
                                                          GameWeekRank = $info.GameWeekRank;
                                                       };
-            if ($currentdata -ne $null)
+            if ($currentdata)
             {
                 $index = $leagueTable.IndexOf($currentdata);
                 $currentdata.GameWeekHistory += $gameweek;
