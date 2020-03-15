@@ -1,6 +1,6 @@
-param ([string]$username, [string]$password, [int]$leagueId)
+param ([PSCredential]$credential, [int]$leagueId)
 Import-Module -Name $PSScriptRoot\..\PSFPLInfo -Force
-$session = Authenticate $username $password;
+$session = Authenticate $credential;
 $league = Get-League $leagueId $session;
 $chart = Chart $league;
 $chart.SaveImage("Chart.png", "PNG");

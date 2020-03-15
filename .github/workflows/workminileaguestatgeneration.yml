@@ -42,4 +42,4 @@ jobs:
           cd PowerShell
           cd PSFPLInfo
           cd Tests
-          powershell -Command ".\WorkMiniLeagueStatGeneration.ps1 -username ${{ secrets.FPL_USERNAME }} -password ${{ secrets.FPL_PASSWORD }} -leagueId ${{ secrets.FPL_LEAGUE_NUMBER }}"
+          powershell -Command ".\WorkMiniLeagueStatGeneration.ps1 -credential (New-Object System.Management.Automation.PSCredential('${{ secrets.FPL_USERNAME }}','(${{ secrets.FPL_PASSWORD }}' | ConvertTo-SecureString -asPlainText -Force))) -leagueId ${{ secrets.FPL_LEAGUE_NUMBER }}"

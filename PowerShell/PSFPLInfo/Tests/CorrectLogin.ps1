@@ -1,10 +1,10 @@
-param ([string]$username, [string]$password, [int]$leagueId)
+param ([PSCredential]$credential, [int]$leagueId)
 Import-Module -Name $PSScriptRoot\..\PSFPLInfo -Force
 # Note, this uses a correct username and password which is expected to not throw an exception.
 $testState = 0;
 try
 {
-    $test = Authenticate $username $password;
+    $test = Authenticate $credential;
 }
 catch
 {

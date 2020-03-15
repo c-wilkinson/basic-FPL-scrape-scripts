@@ -10,12 +10,9 @@ function Authenticate
     [cmdletbinding()]
 	[OutputType([object])]
     param(
-        [Parameter(Mandatory=$true)][string]$username,
-        [Parameter(Mandatory=$true)][string]$password
+        [Parameter(Mandatory=$true)][PSCredential]$credential
     )
     Write-Verbose "Attempt to authenticate with FPL servers";
-    $securePassword = $password | ConvertTo-SecureString -asPlainText -Force;
-    $Credential = New-Object System.Management.Automation.PSCredential($username,$securePassword);    
     $UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.19 Safari/537.36";
     $Uri = (Get-URLFromAPI "usersLogin");
     [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls";
@@ -23,8 +20,8 @@ function Authenticate
     $CsrfToken = $LoginResponse.InputFields.Where{$_.name -eq 'csrfmiddlewaretoken'}.value;
     $Response = Invoke-WebRequest -Uri $Uri -WebSession $session -Method 'Post' -UseBasicParsing -Body @{
         'csrfmiddlewaretoken' = $CsrfToken
-        'login'               = $Credential.UserName
-        'password'            = $Credential.GetNetworkCredential().Password
+        'login'               = $credential.UserName
+        'password'            = $credential.GetNetworkCredential().Password
         'app'                 = 'plfpl-web'
         'redirect_uri'        = (Get-URLFromAPI "login")
         'user-agent'          = $UserAgent

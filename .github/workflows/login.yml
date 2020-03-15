@@ -24,4 +24,4 @@ jobs:
           cd PowerShell
           cd PSFPLInfo
           cd Tests
-          powershell -Command ".\CorrectLogin.ps1 -username ${{ secrets.FPL_USERNAME }} -password ${{ secrets.FPL_PASSWORD }}"
+          powershell -Command ".\CorrectLogin.ps1 -credential (New-Object System.Management.Automation.PSCredential('${{ secrets.FPL_USERNAME }}','(${{ secrets.FPL_PASSWORD }}' | ConvertTo-SecureString -asPlainText -Force)))"
