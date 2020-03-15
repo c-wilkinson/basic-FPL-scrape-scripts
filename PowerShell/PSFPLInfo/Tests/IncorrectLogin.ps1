@@ -3,7 +3,8 @@ Import-Module -Name $PSScriptRoot\..\PSFPLInfo -Force
 $testState = 0;
 try
 {
-    $test = Authenticate incorrect@user.com badpassword
+    $badCredential = New-Object System.Management.Automation.PSCredential('incorrect@user.com','badpassword');
+    $test = Authenticate $badCredential
 }
 catch
 {
