@@ -31,3 +31,8 @@ $chart.SaveImage("somePath\someFile.png", "PNG");
 ```
 
 This generates a line graph of the history of your mini-league rankings.
+
+## Python
+### PYFPLInfo
+
+To come.

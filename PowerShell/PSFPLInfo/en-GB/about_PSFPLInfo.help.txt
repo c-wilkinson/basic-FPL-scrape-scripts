@@ -5,7 +5,7 @@ SHORT DESCRIPTION
     PSFPLInfo has various scraping mechanisms to generate statistics from the FPL site
 
 LONG DESCRIPTION
-    PSFPLInfo allows generation of FPL mini-league statistics and predictive algorithms for determining optimal transfer targets
+    PSFPLInfo creates various objects from the FPL API for you to manipulate in your own code.  It was designed to map the week-by-week rankings of a specified mini-league, creating a chart that is then distributed to the members in the form on a weekly newsletter.
 
 DETAILED DESCRIPTION
     Generated data can be explored like normal PowerShell objects.  Generating charts will output an image file that can be copied, uploaded or e-mailed.
