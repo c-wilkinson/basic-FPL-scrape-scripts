@@ -9,6 +9,21 @@ function Chart
     .DESCRIPTION
         This function creates a league chart based on 
         the league object passed in.
+    .PARAMETER league
+        This is an object representing mini-league data.  You can generate this 
+        by using the Get-League function of this module.
+    .OUTPUTS
+        DataVisualization.Charting.Chart.  Chart returns the Chart class from the namespace 
+        System.Windows.Forms.DataVisualization.Charting.  This has several methods that can 
+        be called (see https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.datavisualization.charting.chart)
+        but the one most likely to be used is SaveImage which allows the generated line chart to 
+        be saved.
+    .EXAMPLE
+        C:\> $chart = Chart $league;
+    .EXAMPLE
+        C:\> $chart = Chart -league $league;
+    .EXAMPLE
+        C:\> $chart = Chart $league; $chart.SaveImage("C:\SomePath\Chart.png", "PNG");
 #> 
     [CmdletBinding()]
 	[OutputType([object])]

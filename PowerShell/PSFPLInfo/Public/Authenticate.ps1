@@ -6,6 +6,21 @@ function Authenticate
     .DESCRIPTION
         This function is used to authenticate with the
         FPL website.  It returns a websession.
+    .PARAMETER credential
+        This a PSCredential object containing the username and password
+        used to login to the FPL server.
+    .OUTPUTS
+        System.Object.  Authenticate returns a websession if the passed in 
+        PSCredential was able to successfully authenticate against the 
+        FPL server.
+    .EXAMPLE
+        C:\> $session = Authenticate -credential $credential;
+    .EXAMPLE
+        C:\> $session = Authenticate -credential (New-Object System.Management.Automation.PSCredential('some@e-mail.com', ('somePassword' | ConvertTo-SecureString -asPlainText -Force)));
+    .EXAMPLE
+        C:\> $session = Authenticate $credential;
+    .EXAMPLE
+        C:\> $session = Authenticate (New-Object System.Management.Automation.PSCredential('some@e-mail.com',('somePassword' | ConvertTo-SecureString -asPlainText -Force)));
 #>    
     [cmdletbinding()]
 	[OutputType([object])]
