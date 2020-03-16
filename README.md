@@ -19,7 +19,9 @@ This is a PowerShell module that scrapes the FPL website and generates objects t
 Install-Module -Name PSFPLInfo -Force; 
 Import-Module -Name PSFPLInfo -Force; 
 
-$session = Authenticate {your login e-mail} {your login password};
+# There are a few ways to create a PSCredential, this is one.  So long as it's a valid PSCredential, the creation method doesn't matter.
+$credential = New-Object System.Management.Automation.PSCredential({your login e-mail}, ({your login password} | ConvertTo-SecureString -asPlainText -Force));
+$session = Authenticate $credential;
 $league = Get-League {your mini league ID} $session;
 $chart = Chart $league;
 ```
