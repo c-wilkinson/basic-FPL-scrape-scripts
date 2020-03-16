@@ -17,7 +17,7 @@ jobs:
           cd PowerShell
           cd PSFPLInfo
           cd Tests
-          powershell -Command ".\IncorrectLogin.ps1"
+          powershell -Command ".\IncorrectLogin.ps1 -somePassword ('sillyPassword' | ConvertTo-SecureString -asPlainText -Force);"
     - name: Correct Login
       shell: powershell
       run: |
