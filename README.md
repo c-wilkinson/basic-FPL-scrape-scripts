@@ -9,9 +9,17 @@ This repository represents my interest in numbers, fantasy football and experime
 
 ## PowerShell
 ### PSFPLInfo
-[![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](http://unlicense.org/)![Create Mini-League Chart For Work Mini-League](https://github.com/c-wilkinson/basic-FPL-scrape-scripts/workflows/Create%20Mini-League%20Chart%20For%20Work%20Mini-League/badge.svg)![AuthenticationTests](https://github.com/c-wilkinson/basic-FPL-scrape-scripts/workflows/AuthenticationTests/badge.svg)![ChartCreationTests](https://github.com/c-wilkinson/basic-FPL-scrape-scripts/workflows/ChartCreationTests/badge.svg)
+#### Badges
+[![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](http://unlicense.org/)
+[![PowerShell Gallery Downloads](https://img.shields.io/powershellgallery/dt/PSFPLInfo?style=plastic)]
+[![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/PSFPLInfo?style=plastic)]
+[![Github Version](https://img.shields.io/github/v/release/c-wilkinson/basic-FPL-scrape-scripts?sort=semver&style=plastic)]
+#### Unit Tests
+![Create Mini-League Chart For Work Mini-League](https://github.com/c-wilkinson/basic-FPL-scrape-scripts/workflows/Create%20Mini-League%20Chart%20For%20Work%20Mini-League/badge.svg)
+![AuthenticationTests](https://github.com/c-wilkinson/basic-FPL-scrape-scripts/workflows/AuthenticationTests/badge.svg)![ChartCreationTests](https://github.com/c-wilkinson/basic-FPL-scrape-scripts/workflows/ChartCreationTests/badge.svg)
 
-[PSFPLInfo PowerShell Package Gallery, version 1.0](https://www.powershellgallery.com/packages/PSFPLInfo).  This repository is current ahead of the package gallery.
+#### Information
+[PSFPLInfo PowerShell Package Gallery](https://www.powershellgallery.com/packages/PSFPLInfo).
 
 This is a PowerShell module that scrapes the FPL website and generates objects that you can use.  Usage is simple:
 
