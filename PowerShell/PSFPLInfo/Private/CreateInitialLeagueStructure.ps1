@@ -40,7 +40,7 @@ function CreateInitialLeagueStructure
                 $rank = $team.rank;
                 Write-Output "Load gameweek history for $teamName";
                 $gameweekHistoryJson = Get-Data $session $teamurl;
-				$gameweekNumber = 0;
+                $gameweekNumber = 0;
                 foreach($gameweek in $gameweekHistoryJson.current)
                 {
                     $gameweekNumber++;
