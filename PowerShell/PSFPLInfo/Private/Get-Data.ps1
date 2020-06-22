@@ -10,7 +10,7 @@ function Get-Data
         the FPL API.
 #> 
     [CmdletBinding()]
-	[OutputType([object])]
+    [OutputType([object])]
     param(
         [Parameter(Mandatory=$true)][object]$session, 
         [Parameter(Mandatory=$true)][string]$url

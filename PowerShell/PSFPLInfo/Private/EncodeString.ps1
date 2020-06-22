@@ -8,7 +8,7 @@ function EncodeString
         non-latin based characters are returned correctly.
 #> 
     [CmdletBinding()]
-	[OutputType([string])]
+    [OutputType([string])]
     param(
         [Parameter(Mandatory=$true)][string]$string
     )

@@ -26,11 +26,27 @@ function Chart
         C:\> $chart = Chart $league; $chart.SaveImage("C:\SomePath\Chart.png", "PNG");
 #> 
     [CmdletBinding()]
-	[OutputType([object])]
+    [OutputType([object])]
     param(
         [Parameter(Mandatory=$true)][object]$league
     )
     $totalPlayers = $league.Count;
+    # This is to cover COVID style extra gameweeks. . .
+    $maxGameweeks = 38;
+    foreach($team in $league)
+    {
+        foreach($gw in $team.GameWeekHistory)
+        {
+            if($maxGameweeks -lt $gw.GameWeekNumber)
+            { 
+                # In theory, you could use GameWeek since the Event are iterating on
+                # the FPL website from 38, but the UI is showing 30+ as Event 39 so
+                # I added a count in case it gets changed
+                $maxGameweeks = $gw.GameWeekNumber;
+            }
+        }
+    }
+    
     Write-Verbose "League has $totalPlayers players";
     $leagueChart = New-object System.Windows.Forms.DataVisualization.Charting.Chart;
     $leagueChart.Width = (38 * 10) + 1000;
@@ -46,7 +62,7 @@ function Chart
     $chartarea.AxisX.Interval = 1;
     $chartarea.AxisX.IsStartedFromZero = $false;
     $chartarea.AxisX.Minimum = 1;
-    $chartarea.AxisX.Maximum = 38;
+    $chartarea.AxisX.Maximum = $maxGameweeks;
     $chartarea.AxisY.Interval = 1;
     $chartarea.AxisY.IsReversed = $true;
     $chartarea.AxisY.IsStartedFromZero = $false;
@@ -69,7 +85,7 @@ function Chart
             $gameweekRankList = @();
             foreach($week in $team.GameWeekHistory)
             {
-                $gameweekList += $week.GameWeek -as [int];
+                $gameweekList += $week.GameWeek;
                 $gameweekRankList += $week.GameWeekRank -as [int];
             }
 

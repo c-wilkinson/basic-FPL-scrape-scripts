@@ -23,7 +23,7 @@ function Authenticate
         C:\> $session = Authenticate (New-Object System.Management.Automation.PSCredential('some@e-mail.com',('somePassword' | ConvertTo-SecureString -asPlainText -Force)));
 #>    
     [cmdletbinding()]
-	[OutputType([object])]
+    [OutputType([object])]
     param(
         [Parameter(Mandatory=$true)][PSCredential]$credential
     )

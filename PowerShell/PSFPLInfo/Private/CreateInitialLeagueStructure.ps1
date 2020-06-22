@@ -8,7 +8,7 @@ function CreateInitialLeagueStructure
         into the initial league structure.
 #> 
     [CmdletBinding()]
-	[OutputType([object])]
+    [OutputType([object])]
     param(
         [Parameter(Mandatory=$true)][int]$leagueId,
         [Parameter(Mandatory=$true)][object]$session
@@ -40,12 +40,15 @@ function CreateInitialLeagueStructure
                 $rank = $team.rank;
                 Write-Output "Load gameweek history for $teamName";
                 $gameweekHistoryJson = Get-Data $session $teamurl;
+				$gameweekNumber = 0;
                 foreach($gameweek in $gameweekHistoryJson.current)
                 {
+                    $gameweekNumber++;
                     $valueParser = ($gameweek.value).ToString();
                     $value = "£" + $valueParser.SubString(0, $valueParser.length - 1) + '.' + $valueParser.SubString($valueParser.length - 1, 1);
                     $unstructured += New-Object PsObject -Property @{
                                                              GameWeek = $gameweek.event;
+                                                             GameWeekNumber = $gameweekNumber;
                                                              GameWeekPoints = $gameweek.points;
                                                              PointsOnBench = $gameweek.points_on_bench;
                                                              TransfersMade = $gameweek.event_transfers;

@@ -28,7 +28,7 @@ function Get-League
         C:\> $league = Get-League 1000 (Authenticate -credential (New-Object System.Management.Automation.PSCredential('some@e-mail.com', ('somePassword' | ConvertTo-SecureString -asPlainText -Force))));
 #> 
     [CmdletBinding()]
-	[OutputType([object])]
+    [OutputType([object])]
     param(
         [Parameter(Mandatory=$true)][int]$leagueId,
         [Parameter(Mandatory=$true)][object]$session
@@ -49,6 +49,7 @@ function Get-League
                                                          TransfersCode = $info.TransfersCode;
                                                          OverallPoints = $info.OverallPoints;
                                                          GameWeekRank = $info.GameWeekRank;
+                                                         GameWeekNumber = $info.GameWeekNumber;
                                                       };
             if ($currentdata)
             {
